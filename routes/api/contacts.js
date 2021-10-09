@@ -1,24 +1,14 @@
 const express = require("express");
 const contactsOperations = require("../../model");
-const { validation } = require("../../middlewares");
+const {
+  validation,
+  controllerWrapper,
+  authenticate,
+} = require("../../middlewares");
 const { joiContactSchema } = require("../../model/contact");
+const { contacts: ctrl } = require("../../controllers");
 
 const router = express.Router();
-
-router.get("/", async (req, res, next) => {
-  try {
-    const contacts = await contactsOperations.listContacts();
-    res.json({
-      status: "success",
-      code: 200,
-      data: {
-        result: contacts,
-      },
-    });
-  } catch (error) {
-    next(error);
-  }
-});
 
 router.get("/:contactId", async (req, res, next) => {
   try {
@@ -122,5 +112,14 @@ router.patch("/:contactId/favorite", async (req, res) => {
     return res.status(404).json({ message: "not found" });
   }
 });
+
+router.post(
+  "/",
+  authenticate,
+  validation(joiContactSchema),
+  controllerWrapper(ctrl.add)
+);
+
+router.get("/", authenticate, controllerWrapper(ctrl.getAll));
 
 module.exports = router;

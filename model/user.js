@@ -2,6 +2,7 @@ const Joi = require("joi");
 const jwt = require("jsonwebtoken");
 const { Schema, model } = require("mongoose");
 const bcrypt = require("bcryptjs");
+const { string } = require("joi");
 
 const userSchema = Schema(
   {
@@ -23,6 +24,7 @@ const userSchema = Schema(
       type: String,
       default: null,
     },
+    avatarURL: String,
   },
   { versionKey: false, timestamps: true }
 );

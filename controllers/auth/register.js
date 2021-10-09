@@ -1,5 +1,6 @@
 const { User } = require("../../model/user");
 const { sendResponse } = require("../../helpers");
+const gravatar = require("gravatar");
 
 const register = async (req, res) => {
   const { email, password } = req.body;
@@ -14,7 +15,8 @@ const register = async (req, res) => {
     return;
   }
 
-  const newUser = new User({ email });
+  const avatarURL = gravatar.url(email);
+  const newUser = new User({ email, avatarURL });
 
   newUser.setPassword(password);
 
@@ -26,6 +28,7 @@ const register = async (req, res) => {
       user: {
         email: newUser.email,
         subscription: newUser.subscription,
+        avatarURL,
       },
     },
   });

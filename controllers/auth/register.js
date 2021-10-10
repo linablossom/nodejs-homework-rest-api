@@ -1,6 +1,9 @@
 const { User } = require("../../model/user");
 const { sendResponse } = require("../../helpers");
 const gravatar = require("gravatar");
+const crypto = require("crypto");
+const { sendEmail } = require("../../helpers/sendgrid");
+const { verificationEmailTemplate } = require("../../helpers/emailTemplates");
 
 const register = async (req, res) => {
   const { email, password } = req.body;
@@ -16,11 +19,16 @@ const register = async (req, res) => {
   }
 
   const avatarURL = gravatar.url(email);
-  const newUser = new User({ email, avatarURL });
+  const verifyToken = crypto.randomBytes(32).toString("hex");
+  const newUser = new User({ email, avatarURL, verifyToken });
 
   newUser.setPassword(password);
 
   await newUser.save();
+
+  const [subject, message] = verificationEmailTemplate(verifyToken);
+  await sendEmail({ to: email, subject, message });
+
   sendResponse({
     res,
     status: 201,

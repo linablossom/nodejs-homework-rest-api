@@ -30,4 +30,8 @@ router.patch(
   controllerWrapper(ctrl.avatar)
 );
 
+router.get("/verify/:verificationToken", controllerWrapper(ctrl.verify));
+
+router.post("/verify", controllerWrapper(ctrl.verifyAgain));
+
 module.exports = router;
